@@ -1,0 +1,13 @@
+{
+    "FEED_GAS_KEY": "bbc-gas",
+    "FEED_HUMI_KEY": "bbc-hum",
+    "FEED_TEMP_KEY": "bbc-tem",
+    "FEED_LED_KEY_1": "bbc-led-1",
+    "FEED_DOOR_KEY_1": "bbc-door-1",
+    "FEED_LED_KEY_2": "bbc-led-2",
+    "FEED_DOOR_KEY_2": "bbc-door-2",
+    "FEED_LED_KEY_3": "bbc-led-3",
+    "FEED_DOOR_KEY_3": "bbc-door-3",
+    "ADAFRUIT_KEY": "aio_eBFh37ODyx0v66v5jBoAVsPREsZF",
+    "USER_NAME": "adazeus"
+}
