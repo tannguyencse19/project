@@ -9,6 +9,7 @@ import LED_ON from './pic/led_on.png'
 import LED_OFF from './pic/led_off.png'
 import DOOR_OPEN from './pic/door_open.png'
 import DOOR_CLOSE from './pic/door_close.png'
+import { Scrollbars } from 'react-custom-scrollbars';
 
 function App() {
   const [gas, setGas] = React.useState()
@@ -17,6 +18,7 @@ function App() {
   const [led_on_1, set_ledon_1] = React.useState(false)
   const [led_on_2, set_ledon_2] = React.useState(false)
   const [led_on_3, set_ledon_3] = React.useState(false)
+  const [led_on_4, set_ledon_4] = React.useState(false)
   const [door_open_1, set_dooropen_1] = React.useState(false)
   const [door_open_2, set_dooropen_2] = React.useState(false)
   const [door_open_3, set_dooropen_3] = React.useState(false)
@@ -227,6 +229,10 @@ function App() {
         set_ledon_3(true);
         message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_3}`;
         break;
+      case 4:
+        set_ledon_4(true);
+        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_4}`;
+        break;
     }
     client.send(message);
   }
@@ -245,6 +251,10 @@ function App() {
       case 3:
         set_ledon_3(false);
         message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_3}`;
+        break;
+      case 4:
+        set_ledon_4(false);
+        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_4}`;
         break;
     }
     client.send(message);
@@ -282,11 +292,12 @@ function App() {
 
   return (
     <div className="App d-flex align-items-center flex-column">
-      <div className='text-warning'>
+      <div className='text-warning m-1'>
         <h1>DOOR</h1>
       </div>
-      <div className = "App d-flex justify-content-around flex-row w-100 h-30">
-          <div className='border border-3 border-warning m-5 w-25'>
+      <Scrollbars style={{ height: "30vw" }}>
+        <div className = "App d-flex justify-content-between flex-row">
+          <div className='border border-3 border-warning m-5' style={{minWidth: "300px"}} >
             <div className='text-warning'>
               <h2>DOOR #1</h2>
             </div>
@@ -301,7 +312,7 @@ function App() {
               <button className='btn btn-danger m-2' onClick={()=>closeDoor(1)}>Close</button>
             </div>
           </div>
-          <div className='border border-3 border-warning m-5 w-25'>
+          <div className='border border-3 border-warning m-5' style={{minWidth: "300px"}} >
             <div className='text-warning'>
               <h2>DOOR #2</h2>
             </div>
@@ -316,7 +327,7 @@ function App() {
               <button className='btn btn-danger m-2' onClick={()=>closeDoor(2)}>Close</button>
             </div>
           </div>
-          <div className='border border-3 border-warning m-5 w-25'>
+          <div className='border border-3 border-warning m-5' style={{minWidth: "300px"}} >
             <div className='text-warning'>
               <h2>DOOR #3</h2>
             </div>
@@ -331,61 +342,81 @@ function App() {
               <button className='btn btn-danger m-2' onClick={()=>closeDoor(3)}>Close</button>
             </div>
           </div>
-      </div>
+        </div>
+      </Scrollbars>
+      
       <div className='text-success'>
         <h1>LED</h1>
       </div>
-      <div className = "App d-flex justify-content-around  flex-row w-100">
-        <div className='border border-3 border-success m-5 w-25'>
-          <div className='text-success'>
-            <h2>LED #1</h2>
+      <Scrollbars style={{ height: "30vw" }}>
+        <div className = "App d-flex justify-content-between flex-row">
+          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
+            <div className='text-success'>
+              <h2>LED #1</h2>
+            </div>
+            {
+              led_on_1?
+              <img src={LED_ON}/>
+              :
+              <img src={LED_OFF}/>
+            }
+            <div className=''>
+              <button className='btn btn-primary m-2' onClick={()=>openLED(1)}>Open</button>
+              <button className='btn btn-danger m-2' onClick={()=>closeLED(1)}>Close</button>
+            </div>
           </div>
-          {
-            led_on_1?
-            <img src={LED_ON}/>
-            :
-            <img src={LED_OFF}/>
-          }
-          <div className=''>
-            <button className='btn btn-primary m-2' onClick={()=>openLED(1)}>Open</button>
-            <button className='btn btn-danger m-2' onClick={()=>closeLED(1)}>Close</button>
+          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
+            <div className='text-success'>
+              <h2>LED #2</h2>
+            </div>
+            {
+              led_on_2?
+              <img src={LED_ON}/>
+              :
+              <img src={LED_OFF}/>
+            }
+            <div className=''>
+              <button className='btn btn-primary m-2' onClick={()=>openLED(2)}>Open</button>
+              <button className='btn btn-danger m-2' onClick={()=>closeLED(2)}>Close</button>
+            </div>
+          </div>
+          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
+            <div className='text-success'>
+              <h2>LED #3</h2>
+            </div>
+            {
+              led_on_3?
+              <img src={LED_ON}/>
+              :
+              <img src={LED_OFF}/>
+            }
+            <div className=''>
+              <button className='btn btn-primary m-2' onClick={()=>openLED(3)}>Open</button>
+              <button className='btn btn-danger m-2' onClick={()=>closeLED(3)}>Close</button>
+            </div>
+          </div>
+          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
+            <div className='text-success'>
+              <h2>LED #4</h2>
+            </div>
+            {
+              led_on_4?
+              <img src={LED_ON}/>
+              :
+              <img src={LED_OFF}/>
+            }
+            <div className=''>
+              <button className='btn btn-primary m-2' onClick={()=>openLED(4)}>Open</button>
+              <button className='btn btn-danger m-2' onClick={()=>closeLED(4)}>Close</button>
+            </div>
           </div>
         </div>
-        <div className='border border-3 border-success m-5 w-25'>
-          <div className='text-success'>
-            <h2>LED #2</h2>
-          </div>
-          {
-            led_on_2?
-            <img src={LED_ON}/>
-            :
-            <img src={LED_OFF}/>
-          }
-          <div className=''>
-            <button className='btn btn-primary m-2' onClick={()=>openLED(2)}>Open</button>
-            <button className='btn btn-danger m-2' onClick={()=>closeLED(2)}>Close</button>
-          </div>
-        </div>
-        <div className='border border-3 border-success m-5 w-25'>
-          <div className='text-success'>
-            <h2>LED #3</h2>
-          </div>
-          {
-            led_on_3?
-            <img src={LED_ON}/>
-            :
-            <img src={LED_OFF}/>
-          }
-          <div className=''>
-            <button className='btn btn-primary m-2' onClick={()=>openLED(3)}>Open</button>
-            <button className='btn btn-danger m-2' onClick={()=>closeLED(3)}>Close</button>
-          </div>
-        </div>
-      </div>
+      </Scrollbars>
+
       <div className='text-danger'>
         <h1>CHART</h1>
       </div>
-      <div className = "App d-flex justify-content-center flex-row w-100">
+      <div className = "App d-flex justify-content-between flex-row w-100">
         <div className='border border-3 border-danger m-2'>
           <div className='text-danger'>
             <h2>Gas Chart</h2>
