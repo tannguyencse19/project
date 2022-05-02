@@ -9,19 +9,13 @@ import LED_ON from './pic/led_on.png'
 import LED_OFF from './pic/led_off.png'
 import DOOR_OPEN from './pic/door_open.png'
 import DOOR_CLOSE from './pic/door_close.png'
-import { Scrollbars } from 'react-custom-scrollbars';
 
 function App() {
   const [gas, setGas] = React.useState()
   const [humi, setHumi] = React.useState()
   const [temp, setTemp] = React.useState()
   const [led_on_1, set_ledon_1] = React.useState(false)
-  const [led_on_2, set_ledon_2] = React.useState(false)
-  const [led_on_3, set_ledon_3] = React.useState(false)
-  const [led_on_4, set_ledon_4] = React.useState(false)
   const [door_open_1, set_dooropen_1] = React.useState(false)
-  const [door_open_2, set_dooropen_2] = React.useState(false)
-  const [door_open_3, set_dooropen_3] = React.useState(false)
 
   React.useEffect(() => {
     axios
@@ -102,10 +96,39 @@ function App() {
         }
       })
 
+    axios
+      .get(
+        `https://io.adafruit.com/api/v2/${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY}/data?limit=1`,
+        {
+          headers: {
+            "x-aio-key": config.ADAFRUIT_KEY,
+          },
+        }
+      )
+      .then((res) => {
+          console.log(res.data[0].value)
+          set_dooropen_1(res.data[0].value == "DOOR_OPEN")
+        }
+      )
+
+    axios
+      .get(
+        `https://io.adafruit.com/api/v2/${config.USER_NAME}/feeds/${config.FEED_LED_KEY}/data?limit=1`,
+        {
+          headers: {
+            "x-aio-key": config.ADAFRUIT_KEY,
+          },
+        }
+      )
+      .then((res) => {
+          console.log(res.data[0].value)
+          set_ledon_1(res.data[0].value == "LED_ON")
+        }
+      )
+
   }, [])
 
-
-  const AIO_FEED_IDS = [config.FEED_GAS_KEY, config.FEED_HUMI_KEY, config.FEED_TEMP_KEY]
+  const AIO_FEED_IDS = [config.FEED_GAS_KEY, config.FEED_HUMI_KEY, config.FEED_TEMP_KEY, config.FEED_DOOR_KEY, config.FEED_LED_KEY]
 
   // Create a client instance
   var client = new Paho.Client(
@@ -174,89 +197,37 @@ function App() {
       }
       setTemp([...temp, tempOb])
     }
+
+    else if (message.destinationName === `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY}`) {
+      set_dooropen_1(message.payloadString == "DOOR_OPEN")
+    }
+
+    else if (message.destinationName === `${config.USER_NAME}/feeds/${config.FEED_LED_KEY}`) {
+      set_ledon_1(message.payloadString == "LED_ON")
+    }
   }
 
-  const openDoor = (door_num) => {
-    var message = new Paho.Message("1");
-    switch(door_num) {
-      case 1:
-        set_dooropen_1(true);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY_1}`;
-        break;
-      case 2:
-        set_dooropen_2(true);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY_2}`;
-        break;
-      case 3:
-        set_dooropen_3(true);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY_3}`;
-        break;
-    }
+  const openDoor = () => {
+    var message = new Paho.Message("DOOR_OPEN");
+    message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY}`;
     client.send(message);
   }
 
-  const closeDoor = (door_num) => {
-    var message = new Paho.Message("0");
-    switch(door_num) {
-      case 1:
-        set_dooropen_1(false);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY_1}`;
-        break;
-      case 2:
-        set_dooropen_2(false);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY_2}`;
-        break;
-      case 3:
-        set_dooropen_3(false);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY_3}`;
-        break;
-    }
+  const closeDoor = () => {
+    var message = new Paho.Message("DOOR_CLOSE");
+    message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_DOOR_KEY}`;
     client.send(message);
   }
 
-  const openLED = (led_num) => {
-    var message = new Paho.Message("1");
-    switch(led_num) {
-      case 1:
-        set_ledon_1(true);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_1}`;
-        break;
-      case 2:
-        set_ledon_2(true);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_2}`;
-        break;
-      case 3:
-        set_ledon_3(true);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_3}`;
-        break;
-      case 4:
-        set_ledon_4(true);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_4}`;
-        break;
-    }
+  const openLED = () => {
+    var message = new Paho.Message("LED_ON");
+    message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY}`;
     client.send(message);
   }
 
-  const closeLED = (led_num) => {
-    var message = new Paho.Message("0");
-    switch(led_num) {
-      case 1:
-        set_ledon_1(false);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_1}`;
-        break;
-      case 2:
-        set_ledon_2(false);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_2}`;
-        break;
-      case 3:
-        set_ledon_3(false);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_3}`;
-        break;
-      case 4:
-        set_ledon_4(false);
-        message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY_4}`;
-        break;
-    }
+  const closeLED = () => {
+    var message = new Paho.Message("LED_OFF");
+    message.destinationName = `${config.USER_NAME}/feeds/${config.FEED_LED_KEY}`;
     client.send(message);
   }
 
@@ -295,123 +266,44 @@ function App() {
       <div className='text-warning m-1'>
         <h1>DOOR</h1>
       </div>
-      <Scrollbars style={{ height: "30vw" }}>
-        <div className = "App d-flex justify-content-between flex-row">
-          <div className='border border-3 border-warning m-5' style={{minWidth: "300px"}} >
-            <div className='text-warning'>
-              <h2>DOOR #1</h2>
-            </div>
-            {
-              door_open_1?
-              <img src={DOOR_OPEN}/>
-              :
-              <img src={DOOR_CLOSE}/>
-            }
-            <div className=''>
-              <button className='btn btn-primary m-2' onClick={()=>openDoor(1)}>Open</button>
-              <button className='btn btn-danger m-2' onClick={()=>closeDoor(1)}>Close</button>
-            </div>
+      <div className = "App d-flex justify-content-between flex-row">
+        <div className='border border-3 border-warning m-5' style={{minWidth: "300px"}} >
+          <div className='text-warning'>
+            <h2>DOOR #1</h2>
           </div>
-          <div className='border border-3 border-warning m-5' style={{minWidth: "300px"}} >
-            <div className='text-warning'>
-              <h2>DOOR #2</h2>
-            </div>
-            {
-              door_open_2?
-              <img src={DOOR_OPEN}/>
-              :
-              <img src={DOOR_CLOSE}/>
-            }
-            <div className=''>
-              <button className='btn btn-primary m-2' onClick={()=>openDoor(2)}>Open</button>
-              <button className='btn btn-danger m-2' onClick={()=>closeDoor(2)}>Close</button>
-            </div>
-          </div>
-          <div className='border border-3 border-warning m-5' style={{minWidth: "300px"}} >
-            <div className='text-warning'>
-              <h2>DOOR #3</h2>
-            </div>
-            {
-              door_open_3?
-              <img src={DOOR_OPEN}/>
-              :
-              <img src={DOOR_CLOSE}/>
-            }
-            <div className=''>
-              <button className='btn btn-primary m-2' onClick={()=>openDoor(3)}>Open</button>
-              <button className='btn btn-danger m-2' onClick={()=>closeDoor(3)}>Close</button>
-            </div>
+          {
+            door_open_1?
+            <img src={DOOR_OPEN}/>
+            :
+            <img src={DOOR_CLOSE}/>
+          }
+          <div className=''>
+            <button className='btn btn-primary m-2' onClick={() => {set_dooropen_1(true); openDoor();}}>OPEN</button>
+            <button className='btn btn-danger m-2' onClick={() => {set_dooropen_1(false); closeDoor();}}>CLOSE</button>
           </div>
         </div>
-      </Scrollbars>
+      </div>
       
       <div className='text-success'>
         <h1>LED</h1>
       </div>
-      <Scrollbars style={{ height: "30vw" }}>
-        <div className = "App d-flex justify-content-between flex-row">
-          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
-            <div className='text-success'>
-              <h2>LED #1</h2>
-            </div>
-            {
-              led_on_1?
-              <img src={LED_ON}/>
-              :
-              <img src={LED_OFF}/>
-            }
-            <div className=''>
-              <button className='btn btn-primary m-2' onClick={()=>openLED(1)}>Open</button>
-              <button className='btn btn-danger m-2' onClick={()=>closeLED(1)}>Close</button>
-            </div>
+      <div className = "App d-flex justify-content-between flex-row">
+        <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
+          <div className='text-success'>
+            <h2>LED #1</h2>
           </div>
-          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
-            <div className='text-success'>
-              <h2>LED #2</h2>
-            </div>
-            {
-              led_on_2?
-              <img src={LED_ON}/>
-              :
-              <img src={LED_OFF}/>
-            }
-            <div className=''>
-              <button className='btn btn-primary m-2' onClick={()=>openLED(2)}>Open</button>
-              <button className='btn btn-danger m-2' onClick={()=>closeLED(2)}>Close</button>
-            </div>
-          </div>
-          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
-            <div className='text-success'>
-              <h2>LED #3</h2>
-            </div>
-            {
-              led_on_3?
-              <img src={LED_ON}/>
-              :
-              <img src={LED_OFF}/>
-            }
-            <div className=''>
-              <button className='btn btn-primary m-2' onClick={()=>openLED(3)}>Open</button>
-              <button className='btn btn-danger m-2' onClick={()=>closeLED(3)}>Close</button>
-            </div>
-          </div>
-          <div className='border border-3 border-success m-5' style={{minWidth: "300px"}} >
-            <div className='text-success'>
-              <h2>LED #4</h2>
-            </div>
-            {
-              led_on_4?
-              <img src={LED_ON}/>
-              :
-              <img src={LED_OFF}/>
-            }
-            <div className=''>
-              <button className='btn btn-primary m-2' onClick={()=>openLED(4)}>Open</button>
-              <button className='btn btn-danger m-2' onClick={()=>closeLED(4)}>Close</button>
-            </div>
+          {
+            led_on_1?
+            <img src={LED_ON}/>
+            :
+            <img src={LED_OFF}/>
+          }
+          <div className=''>
+            <button className='btn btn-primary m-2' onClick={() => {set_ledon_1(true); openLED();}}>TURN ON</button>
+            <button className='btn btn-danger m-2' onClick={() => {set_ledon_1(false); closeLED();}}>TURN OFF</button>
           </div>
         </div>
-      </Scrollbars>
+      </div>
 
       <div className='text-danger'>
         <h1>CHART</h1>
